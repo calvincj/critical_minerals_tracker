@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Critical Minerals Tracker</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>Critical Minerals <span>Tracker</span></h1>
+      <nav>
+        <button id="nav-deals" class="active" onclick="switchTab('deals')">Trade &amp; Investment</button>
+        <button id="nav-projects" onclick="switchTab('projects')">Mines &amp; Refineries</button>
+        <button id="nav-prices" onclick="switchTab('prices')">Price Movements</button>
+        <button id="nav-news" onclick="switchTab('news')">News</button>
+      </nav>
+    </header>
+
+    <div class="body">
+      <aside></aside>
+
+      <main>
+        <!-- Deals Section -->
+        <div id="section-deals" class="section active">
+          <div class="section-header">
+            <h2>Trade &amp; Investment Deals <span class="count-badge" id="deals-count">0</span></h2>
+            <p>Trade agreements, investment deals, and policy statements</p>
+          </div>
+          <div class="deal-list" id="deals-list"></div>
+        </div>
+
+        <!-- Projects Section -->
+        <div id="section-projects" class="section">
+          <div class="section-header">
+            <h2>Mines &amp; Refineries <span class="count-badge" id="projects-count">0</span></h2>
+            <p>New mine approvals, refinery openings, and major project milestones</p>
+          </div>
+          <div id="projects-list"></div>
+        </div>
+
+        <!-- Prices Section -->
+        <div id="section-prices" class="section">
+          <div class="section-header">
+            <h2>Price Movements <span class="count-badge" id="prices-count">0</span></h2>
+            <p>Significant price fluctuations and market-moving events</p>
+          </div>
+          <div class="price-grid" id="prices-grid"></div>
+
+          <div class="section-header" style="margin-top:36px">
+            <h2>Trade Flows <span class="count-badge" id="trade-status">—</span></h2>
+            <p>Top exporters by mineral · UN Comtrade 2023 annual data</p>
+          </div>
+          <div id="trade-grid" class="trade-grid">
+            <div class="loading-row"><span class="spinner"></span> Loading Comtrade data…</div>
+          </div>
+        </div>
+
+        <!-- News Section -->
+        <div id="section-news" class="section">
+          <div class="section-header">
+            <h2>News <span class="count-badge" id="news-count">—</span></h2>
+            <p>South China Morning Post · filtered and summarized by AI · refreshed every 6 hours</p>
+          </div>
+          <div id="news-list">
+            <div class="loading-row"><span class="spinner"></span> Fetching latest articles…</div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
