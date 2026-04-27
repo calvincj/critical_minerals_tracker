@@ -146,9 +146,6 @@ function clearFilters() {
 function renderContent() {
   if (activeTab === "deals") {
     renderDeals();
-    renderGTA();
-    renderITAReports();
-    renderSCMPNews("deals", "news-deals", "news-deals-count");
   } else if (activeTab === "projects") {
     renderProjects();
     renderSCMPNews("projects", "news-projects", "news-projects-count");
@@ -550,22 +547,6 @@ async function prefetchInBackground() {
       try {
         const r = await fetch("/api/trade");
         if (r.ok) { const j = await r.json(); tradeData = j.trade || {}; cacheSet("comtrade_trade", tradeData); }
-      } catch (_) {}
-    })(),
-    (async () => {
-      const cached = cacheGet("gta_interventions", 21600000);
-      if (cached) { gtaData = cached; return; }
-      try {
-        const r = await fetch("/api/gta");
-        if (r.ok) { const j = await r.json(); gtaData = j.interventions || []; cacheSet("gta_interventions", gtaData); }
-      } catch (_) {}
-    })(),
-    (async () => {
-      const cached = cacheGet("ita_data", 86400000);
-      if (cached) { itaData = cached; return; }
-      try {
-        const r = await fetch("/api/ita");
-        if (r.ok) { itaData = await r.json(); cacheSet("ita_data", itaData); }
       } catch (_) {}
     })(),
   ]);
