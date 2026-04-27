@@ -14,7 +14,6 @@
         <button id="nav-deals" class="active" onclick="switchTab('deals')">Trade &amp; Investment</button>
         <button id="nav-projects" onclick="switchTab('projects')">Mines &amp; Refineries</button>
         <button id="nav-prices" onclick="switchTab('prices')">Price Movements</button>
-        <button id="nav-news" onclick="switchTab('news')">News</button>
       </nav>
     </header>
 
@@ -22,25 +21,57 @@
       <aside></aside>
 
       <main>
-        <!-- Deals Section -->
+        <!-- Trade & Investment -->
         <div id="section-deals" class="section active">
           <div class="section-header">
             <h2>Trade &amp; Investment Deals <span class="count-badge" id="deals-count">0</span></h2>
-            <p>Trade agreements, investment deals, and policy statements</p>
+            <p>Curated trade agreements, investment deals, and policy statements</p>
           </div>
           <div class="deal-list" id="deals-list"></div>
+
+          <div class="section-header" style="margin-top:36px">
+            <h2>Live Policy Interventions <span class="count-badge" id="gta-count">—</span></h2>
+            <p>Export restrictions, tariffs, and subsidies · Global Trade Alert · last 6 months</p>
+          </div>
+          <div id="gta-list">
+            <div class="loading-row"><span class="spinner"></span> Loading…</div>
+          </div>
+
+          <div class="section-header" style="margin-top:36px">
+            <h2>Market Intelligence <span class="count-badge" id="ita-reports-count">—</span></h2>
+            <p>Country market research reports · International Trade Administration</p>
+          </div>
+          <div id="ita-reports">
+            <div class="loading-row"><span class="spinner"></span> Loading…</div>
+          </div>
+
+          <div class="section-header" style="margin-top:36px">
+            <h2>Latest Coverage <span class="count-badge" id="news-deals-count">—</span></h2>
+            <p>Deals and policy news · South China Morning Post · filtered by AI</p>
+          </div>
+          <div id="news-deals">
+            <div class="loading-row"><span class="spinner"></span> Loading…</div>
+          </div>
         </div>
 
-        <!-- Projects Section -->
+        <!-- Mines & Refineries -->
         <div id="section-projects" class="section">
           <div class="section-header">
             <h2>Mines &amp; Refineries <span class="count-badge" id="projects-count">0</span></h2>
             <p>New mine approvals, refinery openings, and major project milestones</p>
           </div>
           <div id="projects-list"></div>
+
+          <div class="section-header" style="margin-top:36px">
+            <h2>Latest Coverage <span class="count-badge" id="news-projects-count">—</span></h2>
+            <p>Mine and refinery news · South China Morning Post · filtered by AI</p>
+          </div>
+          <div id="news-projects">
+            <div class="loading-row"><span class="spinner"></span> Loading…</div>
+          </div>
         </div>
 
-        <!-- Prices Section -->
+        <!-- Price Movements -->
         <div id="section-prices" class="section">
           <div class="section-header">
             <h2>Price Movements <span class="count-badge" id="prices-count">0</span></h2>
@@ -49,22 +80,27 @@
           <div class="price-grid" id="prices-grid"></div>
 
           <div class="section-header" style="margin-top:36px">
+            <h2>Latest Coverage <span class="count-badge" id="news-prices-count">—</span></h2>
+            <p>Price and market news · South China Morning Post · filtered by AI</p>
+          </div>
+          <div id="news-prices">
+            <div class="loading-row"><span class="spinner"></span> Loading…</div>
+          </div>
+
+          <div class="section-header" style="margin-top:36px">
             <h2>Trade Flows <span class="count-badge" id="trade-status">—</span></h2>
             <p>Top exporters by mineral · UN Comtrade 2023 annual data</p>
           </div>
           <div id="trade-grid" class="trade-grid">
-            <div class="loading-row"><span class="spinner"></span> Loading Comtrade data…</div>
+            <div class="loading-row"><span class="spinner"></span> Loading…</div>
           </div>
-        </div>
 
-        <!-- News Section -->
-        <div id="section-news" class="section">
-          <div class="section-header">
-            <h2>News <span class="count-badge" id="news-count">—</span></h2>
-            <p>South China Morning Post · filtered and summarized by AI · refreshed every 6 hours</p>
+          <div class="section-header" style="margin-top:36px">
+            <h2>US Tariff Rates <span class="count-badge" id="ita-tariff-status">—</span></h2>
+            <p>MFN tariff rates on key mineral HTS codes · International Trade Administration</p>
           </div>
-          <div id="news-list">
-            <div class="loading-row"><span class="spinner"></span> Fetching latest articles…</div>
+          <div id="ita-tariffs">
+            <div class="loading-row"><span class="spinner"></span> Loading…</div>
           </div>
         </div>
       </main>

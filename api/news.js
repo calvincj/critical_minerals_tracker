@@ -61,14 +61,19 @@ module.exports = async function handler(req, res) {
 Return ONLY articles relevant to: critical minerals, mining, mineral trade deals, FDI in mining/processing, mineral supply chains, battery materials, rare earths, mineral export controls, or mineral-related policy.
 Ignore all other articles (politics, sport, culture, etc.).
 
-For each relevant article output one JSON object. Mineral list to choose from: ${MINERALS.join(', ')}.
+For each relevant article output one JSON object.
+Mineral list: ${MINERALS.join(', ')}.
 Deal type list: ${DEAL_TYPES.join(', ')}, Other.
+Section rules — pick exactly one:
+  "deals"    = trade agreements, investment deals, FDI, export controls, sanctions, policy statements
+  "projects" = new mines, refineries, processing plants, exploration announcements, construction milestones
+  "prices"   = price movements, supply/demand shifts, market outlooks, production cuts/increases
 
 Articles (index | title | description | date):
 ${batch.map((it, i) => `[${i}] ${it.title} | ${it.description} | ${it.pubDate}`).join('\n')}
 
-Respond ONLY with valid JSON in this exact shape:
-{"articles":[{"index":<number>,"title":"<10 words max, factual>","summary":"<2 sentences max>","minerals":["<mineral>"],"dealType":"<type>"}]}
+Respond ONLY with valid JSON:
+{"articles":[{"index":<number>,"title":"<concise headline: use X/Y for countries, drop org names, keep key number/action, 8 words max — e.g. 'China Bans Rare Earth Exports to US' or 'US/Japan Sign Lithium Supply Deal'>","summary":"<2 sentences max>","minerals":["<mineral>"],"dealType":"<type>","section":"<deals|projects|prices>"}]}
 If no articles are relevant, return {"articles":[]}.`;
 
     const completion = await groq.chat.completions.create({
@@ -93,6 +98,7 @@ If no articles are relevant, return {"articles":[]}.`;
         summary: a.summary || '',
         minerals: Array.isArray(a.minerals) ? a.minerals : [],
         dealType: a.dealType || 'Other',
+        section: ['deals','projects','prices'].includes(a.section) ? a.section : 'deals',
         date: batch[a.index].pubDate,
         link: batch[a.index].link,
         source: 'SCMP',
