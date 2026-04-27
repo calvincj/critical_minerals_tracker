@@ -38,6 +38,7 @@ let newsData = null;
 let tradeData = null;
 let gtaData = null;
 let itaData = null;
+let ieaData = null;
 
 // ── Tab switching ──
 function switchTab(tab) {
@@ -145,14 +146,11 @@ function clearFilters() {
 // ── Content routing ──
 function renderContent() {
   if (activeTab === "deals") {
-    renderDeals();
+    renderIEAPolicies();
   } else if (activeTab === "projects") {
     renderProjects();
-    renderSCMPNews("projects", "news-projects", "news-projects-count");
   } else if (activeTab === "prices") {
     renderPrices();
-    renderSCMPNews("prices", "news-prices", "news-prices-count");
-    renderTradeFlows();
     renderITATariffs();
   }
 }
@@ -187,6 +185,118 @@ function renderDeals() {
       </div>
     </div>
   `).join("");
+}
+
+// ── IEA Policy data ──
+async function loadIEAData() {
+  if (ieaData) return;
+  const cached = cacheGet("iea_policies", 86400000);
+  if (cached) { ieaData = cached; return; }
+  try {
+    const r = await fetch("/data/iea_policies.json");
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    ieaData = await r.json();
+    cacheSet("iea_policies", ieaData);
+  } catch (err) {
+    console.error("[iea]", err.message);
+    ieaData = [];
+  }
+}
+
+const IEA_MINERAL_KEYWORDS = {
+  Cobalt: ["cobalt"],
+  Copper: ["copper"],
+  Graphite: ["graphite"],
+  Lithium: ["lithium"],
+  Manganese: ["manganese"],
+  Nickel: ["nickel"],
+  "Rare Earths": ["rare earth", "neodymium", "dysprosium", "praseodymium", "lanthanum", "cerium"],
+  Silicon: ["silicon"],
+  Uranium: ["uranium"],
+};
+
+function extractMinerals(text) {
+  const lower = text.toLowerCase();
+  return MINERALS.filter(m => IEA_MINERAL_KEYWORDS[m].some(kw => lower.includes(kw)));
+}
+
+function ieaPolicyLabel(policy) {
+  const names = policy.policyTypes.map(pt => pt.name);
+  if (names.some(n => ["Export controls and restrictions", "Export and import ban", "Import controls and restrictions"].includes(n))) return { label: "Trade Control", cls: "type-harmful" };
+  if (names.some(n => n === "Foreign direct investment (FDI)")) return { label: "Investment", cls: "type-trade" };
+  if (names.some(n => ["Non-tariff measures", "Tariffs and duties"].includes(n))) return { label: "Trade Measure", cls: "type-trade" };
+  if (names.some(n => n === "International arrangements")) return { label: "Agreement", cls: "type-statement" };
+  return { label: "Strategic Plan", cls: "type-non" };
+}
+
+async function renderIEAPolicies() {
+  const container = document.getElementById("deals-list");
+  if (!container) return;
+
+  if (!ieaData) {
+    container.innerHTML = `<div class="loading-row"><span class="spinner"></span> Loading IEA policies…</div>`;
+    await loadIEAData();
+  }
+
+  const all = (ieaData || []);
+  const filtered = all.filter(p => {
+    const minerals = extractMinerals(p.title + " " + p.description);
+    return minerals.length === 0 || minerals.some(m => filters.minerals.has(m));
+  });
+
+  document.getElementById("deals-count").textContent = filtered.length;
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="empty"><p>No policies match the selected filters.</p></div>`;
+    return;
+  }
+
+  const DEALS_filtered = DEALS.filter(d =>
+    filters.dealTypes.has(d.type) && d.minerals.some(m => filters.minerals.has(m))
+  ).sort((a, b) => b.dateISO.localeCompare(a.dateISO));
+
+  const dealsHTML = DEALS_filtered.map(d => `
+    <div class="deal-card${isNew(d.dateISO) ? " is-new" : ""}">
+      <div class="deal-meta">
+        ${isNew(d.dateISO) ? newBadge() : ""}
+        <span class="deal-date">${d.date}</span>
+        <span class="deal-type ${typeClass(d.type)}">${d.type}</span>
+        ${d.minerals.map(m => `<span class="mineral-tag">${m}</span>`).join("")}
+      </div>
+      <div class="project-name">${d.name}</div>
+      <p class="deal-summary">${d.summary}</p>
+      <div class="deal-footer">
+        <a href="${d.link}" class="deal-link">Source →</a>
+      </div>
+    </div>
+  `).join("");
+
+  const ieaHTML = filtered.map(p => {
+    const { label, cls } = ieaPolicyLabel(p);
+    const minerals = extractMinerals(p.title + " " + p.description).filter(m => filters.minerals.has(m));
+    const countries = p.countries.slice(0, 3).join(", ");
+    const dateStr = p.datePromulgated ? p.datePromulgated.substring(0, 4) : p.year;
+    const statusBadge = p.status === "Announced" ? `<span class="deal-type type-statement">Announced</span>` : "";
+    return `
+      <div class="deal-card">
+        <div class="deal-meta">
+          <span class="deal-date">${dateStr}</span>
+          <span class="deal-type ${cls}">${label}</span>
+          ${statusBadge}
+          ${minerals.map(m => `<span class="mineral-tag">${m}</span>`).join("")}
+          <span class="source-badge">IEA</span>
+        </div>
+        <div class="project-name">${p.title}</div>
+        ${p.description ? `<p class="deal-summary">${p.description}</p>` : ""}
+        <div class="deal-footer">
+          ${countries ? `<span style="color:var(--text-muted);font-size:12px">${countries}${p.jurisdiction === "International" ? " · International" : ""}</span>` : ""}
+          ${p.link ? `<a href="${p.link}" target="_blank" rel="noopener" class="deal-link">Source →</a>` : ""}
+        </div>
+      </div>`;
+  }).join("");
+
+  container.innerHTML = dealsHTML + ieaHTML;
+  document.getElementById("deals-count").textContent = DEALS_filtered.length + filtered.length;
 }
 
 function renderProjects() {
@@ -248,8 +358,6 @@ function renderPrices() {
       </div>
     `).join("");
   }
-
-  renderTradeFlows();
 }
 
 // ── Trade Flows (Comtrade) ──
@@ -540,15 +648,8 @@ function displayITAReports(reports) {
 // Kick off all background fetches in parallel so data is warm when user switches tabs
 async function prefetchInBackground() {
   await Promise.allSettled([
+    loadIEAData(),
     loadNewsData(),
-    (async () => {
-      const cached = cacheGet("comtrade_trade", 86400000);
-      if (cached) { tradeData = cached; return; }
-      try {
-        const r = await fetch("/api/trade");
-        if (r.ok) { const j = await r.json(); tradeData = j.trade || {}; cacheSet("comtrade_trade", tradeData); }
-      } catch (_) {}
-    })(),
   ]);
 }
 

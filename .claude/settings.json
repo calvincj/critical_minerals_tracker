@@ -10,7 +10,8 @@
       "Bash(npm install *)",
       "WebFetch(domain:globaltradealert.org)",
       "WebFetch(domain:developer.trade.gov)",
-      "WebFetch(domain:developer.export.gov)"
+      "WebFetch(domain:developer.export.gov)",
+      "Bash(python3 -c ' *)"
     ]
   }
 }
