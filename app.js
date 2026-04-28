@@ -74,7 +74,6 @@ function renderSidebar() {
   } else if (activeTab === "prices") {
     aside.innerHTML =
       actionRow +
-      buildCheckboxGroup("Direction", "priceDirection", ["up", "down"], v => v === "up" ? "Price Increase" : "Price Decrease") +
       buildMineralFilter();
   }
 }
@@ -330,7 +329,6 @@ function renderProjects() {
 
 function renderPrices() {
   const filtered = PRICES.filter(p =>
-    filters.priceDirection.has(p.direction) &&
     filters.minerals.has(p.mineral)
   ).sort((a, b) => b.dateISO.localeCompare(a.dateISO));
 
@@ -653,10 +651,17 @@ async function prefetchInBackground() {
   ]);
 }
 
+// ── Mobile filter toggle ──
+let filtersOpen = false;
+function toggleFilters() {
+  filtersOpen = !filtersOpen;
+  document.querySelector(".body").classList.toggle("filters-open", filtersOpen);
+  document.getElementById("filter-arrow").textContent = filtersOpen ? "▲" : "▼";
+}
+
 // ── Init ──
 document.addEventListener("DOMContentLoaded", () => {
   renderSidebar();
   renderContent();
-  // Pre-fetch in background after initial render so it doesn't block
   prefetchInBackground();
 });

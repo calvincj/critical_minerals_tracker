@@ -590,22 +590,58 @@ main {
   font-size: 14px;
 }
 
+/* ── Mobile filter toggle button (hidden on desktop) ── */
+#filter-toggle {
+  display: none;
+}
+
 /* ── Responsive ── */
 @media (max-width: 768px) {
   header {
     padding: 0 16px;
-    flex-wrap: wrap;
     height: auto;
-    padding-top: 12px;
-    padding-bottom: 12px;
-    gap: 12px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  header h1 {
+    font-size: 14px;
+  }
+
+  nav button {
+    padding: 5px 10px;
+    font-size: 12px;
   }
 
   .body {
     flex-direction: column;
   }
 
+  #filter-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    background: var(--surface);
+    border: none;
+    border-bottom: 1px solid var(--border);
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    letter-spacing: 0.02em;
+  }
+
+  #filter-toggle:hover {
+    color: var(--text);
+    background: var(--bg);
+  }
+
   aside {
+    display: none;
     width: 100%;
     min-height: auto;
     position: static;
@@ -615,18 +651,33 @@ main {
     max-height: none;
   }
 
-  .filter-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
+  .body.filters-open aside {
+    display: block;
   }
 
   .filter-group {
+    margin-bottom: 16px;
+  }
+
+  .filter-group:last-child {
     margin-bottom: 0;
-    min-width: 140px;
+  }
+
+  .group-btns {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .mineral-checks {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px 12px;
   }
 
   main {
-    padding: 20px 16px;
+    padding: 16px;
+  }
+
+  .price-grid {
+    grid-template-columns: 1fr;
   }
 }
